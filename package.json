@@ -1,0 +1,16 @@
+{
+  "name": "advanced-todo-app",
+  "version": "1.0.0",
+  
+  "scripts": {
+    "build": "if-env Type=server && (cd server && npm run start) || (cd client && npm run dev)",
+    "server":"node ./server/server.js",
+    "client":"cd client && npm run dev"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "if-env": "^1.0.4"
+  }
+}

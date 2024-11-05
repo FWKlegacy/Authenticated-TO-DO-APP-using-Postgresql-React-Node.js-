@@ -1,0 +1,52 @@
+.list-item{
+    width: 100%;
+    margin: 10px 0;
+    box-shadow: rgba(0,0,0,0.08) 0 0 0 1px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.infor-container .buttons{
+    display: flex;
+    align-items: center; 
+ }
+ 
+ .task-title{
+    display: flex;
+    justify-content: space-between;
+    gap: 5px;
+    align-items: center;
+ }
+
+ .edit-btn{
+    border: 1.5px solid rgb(141, 181, 145);
+    color: rgb(141, 181, 145);
+    text-transform: uppercase;
+    cursor: pointer;
+ }
+
+ .edit-btn:hover{
+   background-color: rgb(182, 223,186);
+ }
+
+ .edit-btn:active{
+    border: 1.5px solid rgb(255,255,255);
+    color: rgb(141, 181, 145);
+  }
+
+  .delete-btn{
+    border: 1.5px solid rgb(255,175,163);
+    color: rgb(255,175,163);
+    text-transform: uppercase;
+  }
+
+  .delete-btn:hover{
+    background-color: rgb(255,201,193);
+  }
+
+  .delete-btn:active{
+    border: 1.5px solid rgb(255,175,163);
+    color: rgb(255,255,255);
+  }
+
+  

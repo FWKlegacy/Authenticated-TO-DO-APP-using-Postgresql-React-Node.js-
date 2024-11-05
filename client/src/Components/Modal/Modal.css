@@ -1,0 +1,57 @@
+.overlay{
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    background-color: rgba(0,0,0,0.5);
+    align-items: center;
+}
+.modal{
+    width: 500px;
+    background-color: rgb(255,255,255);
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: rgba(0,0,0,0.5)0 6px 24px 0, rgb(0,0,0,0.08)0 0 0 1px;
+
+}
+
+ .form-title-container{
+    display: flex;
+    justify-content: space-between;
+}
+
+.form-title-container button{
+    border: none;
+    background-color: transparent;
+    font-size: 20px;
+  
+}
+
+.form-title-container button:active{
+   color:rgb(255,50,50);
+  
+}
+
+.modal form{
+    display: flex;
+    flex-direction: column;
+
+}
+
+.modal label{
+    font-size: 13px;
+}
+
+input{
+    margin: 11px 0;
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 1.5px solid rgb(230,232,236);
+
+}
+
+
+
