@@ -4,6 +4,9 @@ const { v4: uuidv4 } = require("uuid");
 const app = express();
 const pool = require("./db");
 const cors = require("cors");
+const bcrypt = require("bcrypt");
+const { JsonWebTokenError } = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 
 app.use(cors());
 app.use(express.json());
@@ -30,7 +33,6 @@ app.get("/todos/:userEmail", async (req, res) => {
 app.post("/todos", async (req, res) => {
   const id = uuidv4();
   const { user_email, title, progress, date } = req.body;
-  console.log(user_email, title, progress, date);
 
   try {
     const newTodo = await pool.query(
@@ -68,6 +70,38 @@ app.delete("/todos/:id", async (req, res) => {
     res.json(deleteTodo);
   } catch (err) {
     console.error(err);
+  }
+});
+
+//SIGNUP ROUTE
+
+app.post("/signup", async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const saltRounds = 10;
+    const userExists = await pool.query("SELECT FROM users WHERE email =$1;", [
+      email,
+    ]);
+    if (userExists.rows.length > 0) {
+      return res.status(400).json({ error: "User Already exists" });
+    }
+
+    //hash password
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    //insert new user
+
+    const newUser = await pool.query(
+      "INSERT INTO users (email,password) VALUES($1,$2) RETURNING *",
+      [email, hashedPassword]
+    );
+
+    res
+      .status(201)
+      .json({ message: "user created successfully", user: newUser.rows[0] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "server error" });
   }
 });
 

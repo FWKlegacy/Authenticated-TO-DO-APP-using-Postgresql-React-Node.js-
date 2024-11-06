@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import "./ListHeader.css";
 import Modal from "../Modal/Modal";
+import { useNavigate } from "react-router-dom";
 
 const ListHeader = ({ listName, getData }) => {
   const [showModal, setShowModal] = useState(false);
+  const navigate = useNavigate();
   const handleSignOut = () => {
-    console.log("signed out");
+    navigate("/login");
   };
   return (
     <div className="list-header">
