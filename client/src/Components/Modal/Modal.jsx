@@ -1,15 +1,62 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./Modal.css";
 import { MdClear } from "react-icons/md";
 
-const Modal = ({ mode, setShowModal }) => {
+const Modal = ({ mode, setShowModal, task, getData }) => {
   const editMode = mode === "edit-btn" ? true : false;
+  const inputRef = useRef();
   const [data, setData] = useState({
-    user_email: "",
-    title: "",
-    progress: "",
-    date: editMode ? "" : new Date(),
+    user_email: editMode ? task.user_email : "wanjalawafulabrevian@gmail.com",
+    title: editMode ? task.title : "",
+    progress: editMode ? task.progress : 50,
+    date: editMode ? task.date : new Date(),
   });
+
+  useEffect(() => {
+    inputRef.current.focus();
+  }, []);
+
+  //edit todo
+  const editData = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(`http://localhost:8000/todos/${task.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (response.status === 200) {
+        console.log("edit successful");
+        setShowModal(false);
+        getData(); // Assuming getData fetches updated task data
+      } else {
+        console.log("Failed to edit task", response.status);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  //Add new todo
+  const postData = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("http://localhost:8000/todos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (response.status === 200) {
+        console.log("task added successfully");
+        setShowModal(false);
+        getData(); // Assuming getData fetches updated task data
+      } else {
+        console.log("Failed to create task", response.status);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -17,8 +64,6 @@ const Modal = ({ mode, setShowModal }) => {
       ...data,
       [name]: value,
     }));
-
-    console.log(data);
   };
   return (
     <div className="overlay">
@@ -29,8 +74,9 @@ const Modal = ({ mode, setShowModal }) => {
             <MdClear />
           </button>
         </div>
-        <form>
+        <form onSubmit={editMode ? editData : postData}>
           <input
+            ref={inputRef}
             required
             maxLength={30}
             placeholder="your task goes here"
@@ -39,7 +85,7 @@ const Modal = ({ mode, setShowModal }) => {
             onChange={handleChange}
           />
           <br />
-          <label htmlFor="range">Drag to select your cureewnt progress</label>
+          <label htmlFor="range">Drag to select your current progress</label>
           <input
             id="range"
             type="range"

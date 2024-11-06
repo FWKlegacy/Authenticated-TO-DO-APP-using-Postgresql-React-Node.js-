@@ -45,6 +45,7 @@
     border: 1.5px solid rgb(108,115,148);
     color: rgb(108,115,148);
     text-transform: uppercase;
+    cursor: pointer;
   }
 
   .create-btn:hover{
