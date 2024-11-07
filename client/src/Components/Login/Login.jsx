@@ -1,31 +1,81 @@
-import React from "react";
+import React, { useState } from "react";
 import "./Login.css";
+import { Link, useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-function Login() {
+const Login = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setEmail("");
+    setPassword("");
+    try {
+      const response = await fetch("http://localhost:8000/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (response.status === 201) {
+        toast.success("Login successfull!");
+        setEmail("");
+        setPassword("");
+        setTimeout(() => {
+          navigate("/home");
+        }, 3000);
+      } else {
+        toast.error("Failed to login. Please check your credentials! ⚠️");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
   return (
-    <div>
-      <div>
+    <>
+      <h1 style={{ textAlign: "center" }}>Login</h1>
+      <form onSubmit={handleSubmit}>
         <div>
-          <form action="">
-            <div>
-              <label htmlFor="email">Email</label>
-              <input type="email" placeholder="Enter your email" />
-            </div>
-            <div>
-              <label htmlFor="password">Password</label>
-              <input type="password" placeholder="Enter your password" />
-            </div>
-            <button>Login</button>
-            <div>
-              <input type="checkbox" />
-              <label htmlFor="remember">Remember me</label>
-            </div>
-            <div>Forgot Password ?</div>
-          </form>
+          <label htmlFor="email">Email</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            value={email}
+            placeholder="Enter your email"
+            onChange={(e) => setEmail(e.target.value)}
+            autoComplete="email"
+            required
+          />
         </div>
-      </div>
-    </div>
+        <div>
+          <label htmlFor="password">Password</label>
+          <input
+            id="password"
+            type="password"
+            name="password"
+            value={password}
+            placeholder="Enter your password"
+            onChange={(e) => setPassword(e.target.value)}
+            autoComplete="password"
+            required
+          />
+        </div>
+        <button type="submit">Login</button>
+        <p>
+          Don't have an account ?{" "}
+          <Link to="/signup" className="link">
+            Sign up here
+          </Link>
+        </p>
+      </form>
+
+      <ToastContainer />
+    </>
   );
-}
+};
 
 export default Login;

@@ -5,15 +5,10 @@ const app = express();
 const pool = require("./db");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
-const { JsonWebTokenError } = require("jsonwebtoken");
-const jwt = require("jsonwebtoken");
 
-app.use(cors());
 app.use(express.json());
-
-/* app.get("/", (req, res) => {
-  res.send("Brevian");
-}); */
+app.use(cors());
+app.use(express.urlencoded({ extended: true }));
 
 //Get all todos
 app.get("/todos/:userEmail", async (req, res) => {
@@ -76,14 +71,17 @@ app.delete("/todos/:id", async (req, res) => {
 //SIGNUP ROUTE
 
 app.post("/signup", async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, repeatPassword } = req.body;
+  const saltRounds = 10;
   try {
-    const saltRounds = 10;
     const userExists = await pool.query("SELECT FROM users WHERE email =$1;", [
       email,
     ]);
     if (userExists.rows.length > 0) {
       return res.status(400).json({ error: "User Already exists" });
+    }
+    if (password !== repeatPassword) {
+      return res.status(400).json({ error: "Password do not match" });
     }
 
     //hash password
@@ -95,13 +93,36 @@ app.post("/signup", async (req, res) => {
       "INSERT INTO users (email,password) VALUES($1,$2) RETURNING *",
       [email, hashedPassword]
     );
-
     res
       .status(201)
       .json({ message: "user created successfully", user: newUser.rows[0] });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "server error" });
+  }
+});
+
+/// Login route
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await pool.query("SELECT * FROM users WHERE email = $1;", [
+      email,
+    ]);
+
+    // Check if user exists
+    if (user.rows.length === 0) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+    const validPassword = await bcrypt.compare(password, user.rows[0].password);
+    if (!validPassword) {
+      return res.status(400).json({ error: "Invalid email or password" });
+    }
+    res.status(201).json({ message: "Logged in successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
 });
 

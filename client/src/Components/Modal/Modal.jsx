@@ -26,7 +26,7 @@ const Modal = ({ mode, setShowModal, task, getData }) => {
         body: JSON.stringify(data),
       });
       if (response.status === 200) {
-        console.log("edit successful");
+        console.log("edit success");
         setShowModal(false);
         getData(); // Assuming getData fetches updated task data
       } else {
@@ -47,7 +47,7 @@ const Modal = ({ mode, setShowModal, task, getData }) => {
         body: JSON.stringify(data),
       });
       if (response.status === 200) {
-        console.log("task added successfully");
+        console.log("task added");
         setShowModal(false);
         getData(); // Assuming getData fetches updated task data
       } else {
