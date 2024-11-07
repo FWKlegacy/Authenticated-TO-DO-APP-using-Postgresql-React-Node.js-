@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import "./ListItem.css";
 import TickIcon from "../../Components/TickIcon/TickIcon";
-import ProgressBar from "../../Components/ProgressBar/ProgressBar";
 import Modal from "../Modal/Modal";
 
 const ListItem = ({ task, getData }) => {
@@ -31,7 +30,6 @@ const ListItem = ({ task, getData }) => {
           <TickIcon />
           {task.title}
         </p>
-        <ProgressBar />
       </div>
       <div className="buttons">
         <button className="edit-btn" onClick={() => setShowModal(true)}>

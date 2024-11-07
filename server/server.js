@@ -5,6 +5,8 @@ const app = express();
 const pool = require("./db");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
+require("dotenv").config();
+const jwt = require("jsonwebtoken");
 
 app.use(express.json());
 app.use(cors());
@@ -72,7 +74,8 @@ app.delete("/todos/:id", async (req, res) => {
 
 app.post("/signup", async (req, res) => {
   const { email, password, repeatPassword } = req.body;
-  const saltRounds = 10;
+  const saltRounds = bcrypt.genSaltSync(10);
+  const hashedPassword = bcrypt.hashSync(password, saltRounds);
   try {
     const userExists = await pool.query("SELECT FROM users WHERE email =$1;", [
       email,
@@ -84,18 +87,13 @@ app.post("/signup", async (req, res) => {
       return res.status(400).json({ error: "Password do not match" });
     }
 
-    //hash password
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-
     //insert new user
 
     const newUser = await pool.query(
-      "INSERT INTO users (email,password) VALUES($1,$2) RETURNING *",
+      "INSERT INTO users (email,password) VALUES($1,$2)",
       [email, hashedPassword]
     );
-    res
-      .status(201)
-      .json({ message: "user created successfully", user: newUser.rows[0] });
+    if (newUser) return res.status(201).json({ message: "User created" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "server error" });
@@ -112,17 +110,20 @@ app.post("/login", async (req, res) => {
     ]);
 
     // Check if user exists
-    if (user.rows.length === 0) {
-      return res.status(400).json({ message: "Invalid credentials" });
-    }
+    if (user.rows.length === 0)
+      return res.status(400).json({ detail: "User does not exist" });
+
     const validPassword = await bcrypt.compare(password, user.rows[0].password);
-    if (!validPassword) {
-      return res.status(400).json({ error: "Invalid email or password" });
-    }
-    res.status(201).json({ message: "Logged in successfully" });
+    if (!validPassword)
+      return res.status(400).json({ error: "Invalid password" });
+
+    // Generate a JWT token
+    const JWT_SECRET = process.env.JWT;
+    const token = jwt.sign({ email }, JWT_SECRET, { expiresIn: "1h" });
+    res.status(201).json({ message: "Logged in successfully", token });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    res.status(400).json({ message: "Server error" });
   }
 });
 

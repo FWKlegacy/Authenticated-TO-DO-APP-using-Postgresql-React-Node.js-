@@ -38,6 +38,7 @@ button:hover {
 .Toastify__toast--success {
   background-color: #4caf50; 
   color: white;
+  display: inline-block;
 }
 
 .Toastify__toast--error {

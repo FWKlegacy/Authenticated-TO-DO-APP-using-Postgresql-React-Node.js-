@@ -14,16 +14,16 @@ const Login = () => {
     setEmail("");
     setPassword("");
     try {
-      const response = await fetch("http://localhost:8000/login", {
+      const res = await fetch("http://localhost:8000/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
-      if (response.status === 201) {
-        toast.success("Login successfull!");
-        setEmail("");
-        setPassword("");
+      if (res.status === 201) {
+        toast.success("Login successfull! Redirecting to TODO APP");
+        const data = await res.json();
+        localStorage.setItem("token", data.token);
         setTimeout(() => {
           navigate("/home");
         }, 3000);
