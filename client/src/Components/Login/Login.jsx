@@ -26,7 +26,7 @@ const Login = () => {
         localStorage.setItem("token", data.token);
         setTimeout(() => {
           navigate("/home");
-        }, 3000);
+        }, 2000);
       } else {
         toast.error("Failed to login. Please check your credentials! ⚠️");
       }
