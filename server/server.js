@@ -7,6 +7,7 @@ const cors = require("cors");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
+const authenticateToken = require("./authenticateToken");
 
 app.use(express.json());
 app.use(cors());
@@ -120,6 +121,14 @@ app.post("/login", async (req, res) => {
     // Generate a JWT token
     const JWT_SECRET = process.env.JWT;
     const token = jwt.sign({ email }, JWT_SECRET, { expiresIn: "1h" });
+
+    // Protected route
+    app.get("/home", authenticateToken, (req, res) => {
+      res.json({
+        message: "This is a protected route",
+        user: req.user,
+      });
+    });
     res.status(201).json({ message: "Logged in successfully", token });
   } catch (err) {
     console.error(err);

@@ -4,6 +4,7 @@ import ListItem from "../ListItem/ListItem";
 
 const Home = () => {
   const [tasks, setTasks] = useState(null);
+  const [error, setError] = useState("");
 
   const getData = async () => {
     const userEmail = "wanjalawafulabrevian@gmail.com";
@@ -15,6 +16,34 @@ const Home = () => {
       console.error(err);
     }
   };
+
+  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://localhost:5173/home", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`Error: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        console.log(data);
+      } catch (error) {
+        console.error("Error:", error);
+        setError(error.message);
+      }
+    };
+
+    fetchData();
+  }, [token]);
 
   useEffect(() => getData, []);
 

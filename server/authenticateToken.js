@@ -1,17 +1,17 @@
-/*const jwt = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
+const JWT_TOKEN = process.env.JWT;
 
-// Middleware to verify JWT
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
 
   if (!token) return res.status(401).json({ message: "Access denied" });
 
-  jwt.verify(token, process.env.JWT, (err, user) => {
+  jwt.verify(token, JWT_TOKEN, (err, user) => {
     if (err) return res.status(403).json({ message: "Invalid token" });
-    req.user = user; // Save the user info to req.user
+    req.user = user;
     next();
   });
 };
 
-module.exports = authenticateToken;*/
+module.exports = authenticateToken;
