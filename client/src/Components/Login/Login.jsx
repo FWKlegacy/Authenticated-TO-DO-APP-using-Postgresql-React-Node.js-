@@ -20,10 +20,11 @@ const Login = () => {
         body: JSON.stringify({ email, password }),
       });
 
+      const data = await res.json();
       if (res.status === 201) {
-        toast.success("Login successfull! Redirecting to TODO APP");
-        const data = await res.json();
+        toast.success("Login successful! Redirecting...", { autoClose: 1500 });
         localStorage.setItem("token", data.token);
+        console.log("JWT Token Stored:", data.token);
         setTimeout(() => {
           navigate("/home");
         }, 2000);

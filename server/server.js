@@ -101,7 +101,7 @@ app.post("/signup", async (req, res) => {
   }
 });
 
-/// Login route
+// Login route
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -118,22 +118,24 @@ app.post("/login", async (req, res) => {
     if (!validPassword)
       return res.status(400).json({ error: "Invalid password" });
 
-    // Generate a JWT token
+    // Generate JWT token
     const JWT_SECRET = process.env.JWT;
     const token = jwt.sign({ email }, JWT_SECRET, { expiresIn: "1h" });
 
-    // Protected route
-    app.get("/home", authenticateToken, (req, res) => {
-      res.json({
-        message: "This is a protected route",
-        user: req.user,
-      });
-    });
+    // Send the token back to the client
     res.status(201).json({ message: "Logged in successfully", token });
   } catch (err) {
     console.error(err);
     res.status(400).json({ message: "Server error" });
   }
+});
+
+// Protected route
+app.get("/home", authenticateToken, (req, res) => {
+  res.json({
+    message: "This is a protected route",
+    user: req.user,
+  });
 });
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
