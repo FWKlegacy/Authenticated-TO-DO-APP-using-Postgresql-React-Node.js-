@@ -70,9 +70,11 @@ const Modal = ({ mode, setShowModal, task, getData }) => {
       <div className="modal">
         <div className="form-title-container">
           <h3>lets create your task</h3>
-          <button onClick={() => setShowModal(false)}>
-            <MdClear />
-          </button>
+          <span>
+            <button onClick={() => setShowModal(false)}>
+              <MdClear />
+            </button>
+          </span>
         </div>
         <form onSubmit={editMode ? editData : postData}>
           <input

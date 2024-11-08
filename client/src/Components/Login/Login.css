@@ -44,6 +44,7 @@ button:hover {
 .Toastify__toast--error {
   background-color: #f44336; 
   color: white;
+  
 }
 
 .Toastify__toast-container {

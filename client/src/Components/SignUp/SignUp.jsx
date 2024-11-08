@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./SignUp.css";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -45,6 +45,7 @@ const SignUp = () => {
         <div>
           <label htmlFor="email">Email</label>
           <input
+            type="email"
             name="email"
             id="email"
             placeholder="Enter your Email"
@@ -75,6 +76,14 @@ const SignUp = () => {
           />
         </div>
         <button type="submit">Sign Up</button>
+        <p>
+          Already have an account ?{" "}
+          <span>
+            <Link to="/login" style={{ textDecoration: "none" }}>
+              Login here
+            </Link>
+          </span>
+        </p>
       </form>
       <ToastContainer />
     </>
