@@ -6,13 +6,12 @@ const pool = require("./db");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
-const jwt = require("jsonwebtoken");
-const authenticateToken = require("./authenticateToken");
+const jwtgenerator = require("./Utils/jwtgenerator");
+const authentication = require("./middleware/authentication");
 
 app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
-
 //Get all todos
 app.get("/todos/:userEmail", async (req, res) => {
   const { userEmail } = req.params;
@@ -74,13 +73,12 @@ app.delete("/todos/:id", async (req, res) => {
 //SIGNUP ROUTE
 
 app.post("/signup", async (req, res) => {
-  const { email, password, repeatPassword } = req.body;
-  const saltRounds = bcrypt.genSaltSync(10);
-  const hashedPassword = bcrypt.hashSync(password, saltRounds);
   try {
-    const userExists = await pool.query("SELECT FROM users WHERE email =$1;", [
-      email,
-    ]);
+    const { email, password, repeatPassword } = req.body;
+    const userExists = await pool.query(
+      "SELECT * FROM users WHERE email =$1;",
+      [email]
+    );
     if (userExists.rows.length > 0) {
       return res.status(400).json({ error: "User Already exists" });
     }
@@ -88,13 +86,19 @@ app.post("/signup", async (req, res) => {
       return res.status(400).json({ error: "Password do not match" });
     }
 
-    //insert new user
+    const saltRounds = bcrypt.genSaltSync(10);
+    const hashedPassword = bcrypt.hashSync(password, saltRounds);
 
+    //insert new user
     const newUser = await pool.query(
       "INSERT INTO users (email,password) VALUES($1,$2)",
       [email, hashedPassword]
     );
     if (newUser) return res.status(201).json({ message: "User created" });
+
+    //generate token
+    const token = jwtgenerator(newUser.rows[0].email);
+    res.json({ token });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "server error" });
@@ -118,20 +122,16 @@ app.post("/login", async (req, res) => {
     if (!validPassword)
       return res.status(400).json({ error: "Invalid password" });
 
-    // Generate JWT token
-    const JWT_SECRET = process.env.JWT;
-    const token = jwt.sign({ email }, JWT_SECRET, { expiresIn: "1h" });
-
-    // Send the token back to the client
-    res.status(201).json({ message: "Logged in successfully", token });
+    //generate token
+    const token = jwtgenerator(user.rows[0].email);
+    res.json({ token });
   } catch (err) {
     console.error(err);
     res.status(400).json({ message: "Server error" });
   }
 });
 
-// Protected route
-app.get("/home", authenticateToken, (req, res) => {
+app.get("/home", authentication, (req, res) => {
   res.json({
     message: "This is a protected route",
     user: req.user,

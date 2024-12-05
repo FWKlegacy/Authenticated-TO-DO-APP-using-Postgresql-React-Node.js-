@@ -1,5 +1,5 @@
-import React from "react";
 import { Navigate } from "react-router-dom";
+import PropTypes from "prop-types";
 
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem("token");
@@ -9,8 +9,13 @@ const ProtectedRoute = ({ children }) => {
     return <Navigate to="/login" />;
   }
 
-  // If the token is valid, render the protected content (children)
+  // Token is present, render the protected content (children)
   return children;
+};
+
+// Prop validation
+ProtectedRoute.propTypes = {
+  children: PropTypes.node.isRequired, // Expect children as a React node (could be any renderable element)
 };
 
 export default ProtectedRoute;

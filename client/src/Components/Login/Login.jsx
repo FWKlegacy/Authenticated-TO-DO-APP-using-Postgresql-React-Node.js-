@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import "./Login.css";
 import { Link, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
@@ -21,7 +21,7 @@ const Login = () => {
       });
 
       const data = await res.json();
-      if (res.status === 201) {
+      if (res.status === 200) {
         toast.success("Login successful! Redirecting...", { autoClose: 1500 });
         localStorage.setItem("token", data.token);
         console.log("JWT Token Stored:", data.token);
@@ -67,7 +67,7 @@ const Login = () => {
         </div>
         <button type="submit">Login</button>
         <p>
-          Don't have an account ?{" "}
+          Dont have an account ?{" "}
           <Link to="/signup" className="link">
             Sign up here
           </Link>
